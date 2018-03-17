@@ -14,6 +14,7 @@ const unsigned int fnmask = 63;
 
 struct instruction_data
 {
+    int address;
     int instruction;
     unsigned int opcode;
     unsigned int rs;
@@ -34,7 +35,7 @@ struct ifid
     unsigned int immediate;
     unsigned int shamt;
     unsigned int func;
-    int pcp4;
+    int PCPlus4;
 };
 
 struct idex
@@ -47,7 +48,7 @@ struct idex
     unsigned int immediate;
     unsigned int shamt;
     unsigned int func;
-    int pcp4;
+    int PCPlus4;
     int branchtarget;
     int readdata1;
     int readdata2;
@@ -95,27 +96,39 @@ struct branchpredictor
 };
 
 void split_data(struct instruction_data* data);
-void print_data();
+void print_data(int* regFile, struct dataMem* memory);
+int load_memory(struct instruction_data* data, struct dataMem* memory);
+void populate_branch_predictor(struct instruction_data* data);
 
 int main(void)
 {
     int i;
+    int address = 0;
     //create data arrays
     struct instruction_data data_table[100];
     struct branchpredictor branchpredict[100];
    
-    unsigned int regFile[32];
+    int regFile[32];
         for (i = 0; i < 32; ++i)
             regFile[i] = 0;
     struct dataMem memory[32];
 
     //read data
     for (i = 0; i < 100; ++i)
-        scanf("%d", &data_table[i].instruction);
+    {
+        if ((scanf("%d", &data_table[i].instruction)) != 1) break;  //break the scanf loop if we reach end of stream
+        data_table[i].address = address;
+        address += 4;
+    }
+    
+    for (; i < 100; ++i)
+        data_table[i].instruction = 0;      //zero out the unused portions of the array
 
     //split data into pieces
     split_data(data_table);
-    print_data();
+    int dataStart = load_memory(data_table, memory);
+    print_data(regFile, memory);
+
     return 0;
 }
 
@@ -135,22 +148,49 @@ void split_data(struct instruction_data* data)
     }
 }
 
-void print_data()
+//print data for each cycle in its entirety
+void print_data(int* regFile, struct dataMem* memory)
 {
     int i;
     printf("********************\nState at the beginning of cycle X:\n\tPC = X\n\tData Memory:\n");
 
     for (i = 0; i < 16; ++i)
     {
-        printf("\t\tdataMem[%d] = X\t\tdataMem[%d] = X\n", i, i + 16);
+        printf("\t\tdataMem[%d] = %d\t\tdataMem[%d] = %d\n", i, memory[i].value, i + 16, memory[i + 16].value);
     }
 
     printf("\tRegisters:\n");
 
     for (i = 0; i < 16; ++i)
     {
-        printf("\t\tregFile[%d] = X\t\tregFile[%d] = X\n", i, i + 16);
+        printf("\t\tregFile[%d] = %d\t\tregFile[%d] = %d\n", i, regFile[i], i + 16, regFile[i + 16]);
     }
 
     printf("\tIF/ID:\n\t\tInstruction: X\n\t\tPCPlus4: X\n");
+}
+
+//return address of data section and populate data file
+int load_memory(struct instruction_data* data, struct dataMem* memory)
+{
+    int i, j;
+
+    for (i = 0; i < 100; ++i)
+        if (data[i].instruction == 1)       //if we find the instruction 1, we know the data segment will follow
+        {
+            i += 1;
+            for (j = 0; j < 32 && i < 100; ++j)     //so we copy down the remaining "instructions" as data
+            {
+                memory[j].address = data[i].address;
+                memory[j].value = data[i++].instruction;    //we stop the loop after 32 iterations
+                                                           //(default to zero if nothing is there to read)
+            }
+            break;
+        }          
+    
+    return memory[0].address;   //return starting address of data section
+}
+
+void populate_branch_predictor(struct instruction_data* data)
+{
+    
 }
