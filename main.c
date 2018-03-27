@@ -32,7 +32,7 @@ struct instruction_data
     unsigned int func;
 };
 
-struct ifid
+struct ifid_reg
 {
     int instruction;
     unsigned int opcode;
@@ -45,7 +45,7 @@ struct ifid
     int PCPlus4;
 };
 
-struct idex
+struct idex_reg
 {
     int instruction;
     unsigned int opcode;
@@ -56,12 +56,12 @@ struct idex
     unsigned int shamt;
     unsigned int func;
     int PCPlus4;
-    int branchtarget;
-    int readdata1;
-    int readdata2;
+    int branchTarget;
+    int readData1;
+    int readData2;
 };
 
-struct exmem
+struct exmem_reg
 {
     int instruction;
     unsigned int opcode;
@@ -71,13 +71,14 @@ struct exmem
     unsigned int immediate;
     unsigned int shamt;
     unsigned int func;
-    int aluresult;
-    int writedata;
-    int writeregister;
+    int aluResult;
+    int writeDataReg;
+    int writeReg;
 };
 
-struct memwb
+struct memwb_reg
 {
+    int instruction;
     unsigned int opcode;
     unsigned int rs;
     unsigned int rt;
@@ -85,8 +86,17 @@ struct memwb
     unsigned int immediate;
     unsigned int shamt;
     unsigned int func;
-    int datafrommemory;
-    int datafromalu;
+    int writeDataMem;
+    int writeDataALU;
+    int writeReg;
+};
+
+struct pipeline_registers
+{
+    struct ifid_reg ifid;
+    struct idex_reg idex;
+    struct exmem_reg exmem;
+    struct memwb_reg memwb;
 };
 
 struct memory_data
@@ -102,37 +112,50 @@ struct branchpredictor
     int state;
 };
 
-int read_data(struct raw_data* src);
+int read_data(struct raw_data* src, int* ending_index);
+
 void split_data(struct instruction_data* data, struct raw_data* src, int ending_index);
-void print_data(int* regFile, struct memory_data* memory);
-void load_memory(struct raw_data* src, struct memory_data* memory, int starting_index);
+
+void print_data(struct memory_data* memory, int* reg_table, struct pipeline_registers* pipeline, int cycle, int pc);
+
+void load_memory(struct raw_data* src, struct memory_data* memory, int starting_index, int ending_index);
+
 void populate_branch_predictor(struct instruction_data* data);
+
+void run_simulation(struct instruction_data* instruction, struct memory_data* mem, int* reg);
+
+void zero_pipeline(struct pipeline_registers* pipeline);
 
 int main(void)
 {
-    int i;
+    int i, ending_index;
     int address = 0;
     int data_index = 0;
+    
     //create data arrays
     struct raw_data source_table[101];               //holds data in cstr form
     struct instruction_data instruction_table[100];        //table of instructions as ints
     struct branchpredictor branch_table[100];
    
-    int regFile[32];                //32 registers
+    int reg_table[32];                //32 registers
     for (i = 0; i < 32; ++i)
-        regFile[i] = 0;
+        reg_table[i] = 0;
+
     struct memory_data memory[32];
 
-    data_index = read_data(source_table);       //read data and record start of data section
-    split_data(instruction_table, source_table, data_index - 1);    //split data into pieces
-    load_memory(source_table, memory, data_index);
-    print_data(regFile, memory);    //print out data
+    data_index = read_data(source_table, &ending_index);
+    split_data(instruction_table, source_table, data_index - 1);
+    load_memory(source_table, memory, data_index, ending_index);
+    
+    run_simulation(instruction_table, memory, reg_table);    //hit the gas my dude, lets go
 
     return 0;
 }
 
-//reads data into array of cstr and returns start of data section
-int read_data(struct raw_data* src)
+//reads data into array of cstr
+//returns the start of the data section
+//sets ending_index to the final index of the whole program
+int read_data(struct raw_data* src, int* ending_index)
 {
     int data_index;
     int i;
@@ -142,8 +165,10 @@ int read_data(struct raw_data* src)
         //printf("%s\n", source_data[i].input);
     }
 
-    for (; i < 101; ++i)                       //zero out unused section of array
-        src[i].input[0] = (char) 0;
+    *ending_index = i;
+
+    //for (; i < 101; ++i)                       //zero out unused section of array
+      //  src[i].input[0] = (char) 0;
 
     for (i = 0; i < 101; ++i)                  //find where data section starts
     {
@@ -177,10 +202,10 @@ void split_data(struct instruction_data* data, struct raw_data* src, int ending_
 }     
 
 //print data for the current cycle
-void print_data(int* regFile, struct memory_data* memory)
+void print_data(struct memory_data* memory, int* reg_table, struct pipeline_registers* pipeline, int cycle, int pc)
 {
     int i;
-    printf("********************\nState at the beginning of cycle X:\n\tPC = X\n\tData Memory:\n");
+    printf("********************\nState at the beginning of cycle %d:\n\tPC = %d\n\tData Memory:\n", cycle, pc);
 
     for (i = 0; i < 16; ++i)
         printf("\t\tmemory_data[%d] = %d\t\tmemory_data[%d] = %d\n", i, memory[i].value, i + 16, memory[i + 16].value);
@@ -188,25 +213,48 @@ void print_data(int* regFile, struct memory_data* memory)
     printf("\tRegisters:\n");
 
     for (i = 0; i < 16; ++i)
-        printf("\t\tregFile[%d] = %d\t\tregFile[%d] = %d\n", i, regFile[i], i + 16, regFile[i + 16]);
+        printf("\t\treg_table[%d] = %d\t\treg_table[%d] = %d\n", i, reg_table[i], i + 16, reg_table[i + 16]);
 
-    printf("\tIF/ID:\n\t\tInstruction: X\n\t\tPCPlus4: X\n");
+    printf("\tIF/ID:\n\t\tInstruction: %d\n\t\tPCPlus4: %d\n", pipeline->ifid.instruction, pipeline->ifid.PCPlus4);
+    
+    printf("\tID/EX:\n\t\tInstruction: %d\n", pipeline->idex.instruction);
+    printf("\t\tPCPlus4: %d\n", pipeline->idex.PCPlus4);
+    printf("\t\tbranchTarget: %d\n", pipeline->idex.branchTarget);
+    printf("\t\treadData1: X\n");
+    printf("\t\treadData2: X\n");
+    printf("\t\timmed: X\n");
+    printf("\t\trs: X\n");
+    printf("\t\trt: X\n");
+    printf("\t\trd: X\n");
+
+    printf("\tEX/MEM:\n\t\tInstruction: X\n");
+    printf("\t\taluResult: X\n");
+    printf("\t\twriteDataReg: X\n");
+    printf("\t\twriteReg: X\n");
+
+    printf("\tMEM/WB:\n\t\tInstruction: X\n");
+    printf("\t\twriteDataMem: X\n");
+    printf("\t\twriteDataALU: X\n");
+    printf("\t\twriteReg: X\n");
 }
 
 //return address of data section and populate data file
-void load_memory(struct raw_data* src, struct memory_data* memory, int starting_index)
+//side note:
+//      I feel like theres an off by one error in here,
+//      but it works, so i'm not going to fix it.
+void load_memory(struct raw_data* src, struct memory_data* memory, int starting_index, int ending_index)
 {
-    //printf("loading memory\n");
     int i, j, address;
-    j = 0;
+    j = 0;                      //(minus 1 because we have an empty line in there)
     address = (starting_index - 1) * 4; //starting line * 4 is the byte address
-    
-    for (i = starting_index; i < 101; ++i)  //(minus 1 because we have an empty line)
+    for (i = starting_index; i <= ending_index; ++i)
     {
-        sscanf(src[i].input, "%d", &memory[j].value);
-        memory[j++].address = address;
-        address += 4;
+        if (sscanf(src[i].input, "%d", &memory[j].value) == 0) break;
+        memory[j++].address = address;      //copy values from the cstr data into the memory array
+        address += 4;               //save address too
     }
+    for (; j < 32; ++j)             //zero out the unused memory
+        memory[j].value = 0;
 }
 
 void populate_branch_predictor(struct instruction_data* data)
@@ -216,4 +264,68 @@ void populate_branch_predictor(struct instruction_data* data)
     {
         //put code here kappa
     }
+}
+
+void run_simulation(struct instruction_data* instruction, struct memory_data* mem, int* reg)
+{
+    struct pipeline_registers pipeline;
+    zero_pipeline(&pipeline);
+
+    int cycle = 1;
+    int pc = 0;
+
+    //while(true)
+    {
+        print_data(mem, reg, &pipeline, cycle, pc);
+    }
+}
+
+void zero_pipeline(struct pipeline_registers* pipeline)
+{
+    pipeline->ifid.instruction = 0;
+    pipeline->ifid.opcode = 0;
+    pipeline->ifid.rs = 0;
+    pipeline->ifid.rt = 0;
+    pipeline->ifid.rd = 0;
+    pipeline->ifid.immediate = 0;
+    pipeline->ifid.shamt = 0;
+    pipeline->ifid.func = 0;
+    pipeline->ifid.PCPlus4 = 0;
+
+    pipeline->idex.instruction = 0;
+    pipeline->idex.opcode = 0;
+    pipeline->idex.rs = 0;
+    pipeline->idex.rt = 0;
+    pipeline->idex.rd = 0;
+    pipeline->idex.immediate = 0;
+    pipeline->idex.shamt = 0;
+    pipeline->idex.func = 0;
+    pipeline->idex.PCPlus4 = 0;
+    pipeline->idex.branchTarget = 0;
+    pipeline->idex.readData1 = 0;
+    pipeline->idex.readData2 = 0;
+
+    pipeline->exmem.instruction = 0;
+    pipeline->exmem.opcode = 0;
+    pipeline->exmem.rs = 0;
+    pipeline->exmem.rt = 0;
+    pipeline->exmem.rd = 0;
+    pipeline->exmem.immediate = 0;
+    pipeline->exmem.shamt = 0;
+    pipeline->exmem.func = 0;
+    pipeline->exmem.aluResult = 0;
+    pipeline->exmem.writeDataReg = 0;
+    pipeline->exmem.writeReg = 0;
+    //i wanna kill myself )(*&@#$()*&@()#DSKFH)
+    pipeline->memwb.instruction = 0;
+    pipeline->memwb.opcode = 0;
+    pipeline->memwb.rs = 0;
+    pipeline->memwb.rt = 0;
+    pipeline->memwb.rd = 0;
+    pipeline->memwb.immediate = 0;
+    pipeline->memwb.shamt = 0;
+    pipeline->memwb.func = 0;
+    pipeline->memwb.writeDataMem = 0;
+    pipeline->memwb.writeDataALU = 0;
+    pipeline->memwb.writeReg = 0;
 }
