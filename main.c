@@ -34,27 +34,13 @@ struct instruction_data
 
 struct ifid_reg
 {
-    int instruction;
-    unsigned int opcode;
-    unsigned int rs;
-    unsigned int rt;
-    unsigned int rd;
-    unsigned int immediate;
-    unsigned int shamt;
-    unsigned int func;
+    struct instruction_data instruction;
     int PCPlus4;
 };
 
 struct idex_reg
 {
-    int instruction;
-    unsigned int opcode;
-    unsigned int rs;
-    unsigned int rt;
-    unsigned int rd;
-    unsigned int immediate;
-    unsigned int shamt;
-    unsigned int func;
+    struct instruction_data instruction;
     int PCPlus4;
     int branchTarget;
     int readData1;
@@ -63,14 +49,7 @@ struct idex_reg
 
 struct exmem_reg
 {
-    int instruction;
-    unsigned int opcode;
-    unsigned int rs;
-    unsigned int rt;
-    unsigned int rd;
-    unsigned int immediate;
-    unsigned int shamt;
-    unsigned int func;
+    struct instruction_data instruction;
     int aluResult;
     int writeDataReg;
     int writeReg;
@@ -78,14 +57,7 @@ struct exmem_reg
 
 struct memwb_reg
 {
-    int instruction;
-    unsigned int opcode;
-    unsigned int rs;
-    unsigned int rt;
-    unsigned int rd;
-    unsigned int immediate;
-    unsigned int shamt;
-    unsigned int func;
+    struct instruction_data instruction;
     int writeDataMem;
     int writeDataALU;
     int writeReg;
@@ -122,9 +94,11 @@ void load_memory(struct raw_data* src, struct memory_data* memory, int starting_
 
 void populate_branch_predictor(struct instruction_data* data);
 
-void run_simulation(struct instruction_data* instruction, struct memory_data* mem, int* reg);
+void run_simulation(struct instruction_data* program, struct memory_data* mem, int* reg);
 
 void zero_pipeline(struct pipeline_registers* pipeline);
+
+void run_rtype(struct instruction_data instruction, int* reg);
 
 int main(void)
 {
@@ -215,27 +189,28 @@ void print_data(struct memory_data* memory, int* reg_table, struct pipeline_regi
     for (i = 0; i < 16; ++i)
         printf("\t\treg_table[%d] = %d\t\treg_table[%d] = %d\n", i, reg_table[i], i + 16, reg_table[i + 16]);
 
-    printf("\tIF/ID:\n\t\tInstruction: %d\n\t\tPCPlus4: %d\n", pipeline->ifid.instruction, pipeline->ifid.PCPlus4);
+    printf("\tIF/ID:\n\t\tInstruction: %d\n", pipeline->ifid.instruction.instruction);
+    printf("\t\tPCPlus4: %d\n", pipeline->ifid.PCPlus4);
     
-    printf("\tID/EX:\n\t\tInstruction: %d\n", pipeline->idex.instruction);
+    printf("\tID/EX:\n\t\tInstruction: %d\n", pipeline->idex.instruction.instruction);
     printf("\t\tPCPlus4: %d\n", pipeline->idex.PCPlus4);
     printf("\t\tbranchTarget: %d\n", pipeline->idex.branchTarget);
-    printf("\t\treadData1: X\n");
-    printf("\t\treadData2: X\n");
-    printf("\t\timmed: X\n");
-    printf("\t\trs: X\n");
-    printf("\t\trt: X\n");
-    printf("\t\trd: X\n");
+    printf("\t\treadData1: %d\n", pipeline->idex.readData1);
+    printf("\t\treadData2: %d\n", pipeline->idex.readData2);
+    printf("\t\timmed: %d\n", pipeline->idex.instruction.immediate);
+    printf("\t\trs: %d\n", pipeline->idex.instruction.rs);
+    printf("\t\trt: %d\n", pipeline->idex.instruction.rt);
+    printf("\t\trd: %d\n", pipeline->idex.instruction.rd);
 
-    printf("\tEX/MEM:\n\t\tInstruction: X\n");
-    printf("\t\taluResult: X\n");
-    printf("\t\twriteDataReg: X\n");
-    printf("\t\twriteReg: X\n");
+    printf("\tEX/MEM:\n\t\tInstruction: %d\n", pipeline->exmem.instruction.instruction);
+    printf("\t\taluResult: %d\n", pipeline->exmem.aluResult);
+    printf("\t\twriteDataReg: %d\n", pipeline->exmem.writeDataReg);
+    printf("\t\twriteReg: %d\n", pipeline->exmem.writeReg);
 
-    printf("\tMEM/WB:\n\t\tInstruction: X\n");
-    printf("\t\twriteDataMem: X\n");
-    printf("\t\twriteDataALU: X\n");
-    printf("\t\twriteReg: X\n");
+    printf("\tMEM/WB:\n\t\tInstruction: %d\n", pipeline->memwb.instruction.instruction);
+    printf("\t\twriteDataMem: %d\n", pipeline->memwb.writeDataMem);
+    printf("\t\twriteDataALU: %d\n", pipeline->memwb.writeDataALU);
+    printf("\t\twriteReg: %d\n", pipeline->memwb.writeReg);
 }
 
 //return address of data section and populate data file
@@ -266,66 +241,112 @@ void populate_branch_predictor(struct instruction_data* data)
     }
 }
 
-void run_simulation(struct instruction_data* instruction, struct memory_data* mem, int* reg)
+void run_simulation(struct instruction_data* program, struct memory_data* mem, int* reg)
 {
-    struct pipeline_registers pipeline;
-    zero_pipeline(&pipeline);
-
+    struct pipeline_registers current, next;
+    
+    int i;
     int cycle = 1;
     int pc = 0;
+    int stop = -1;
+    
+    zero_pipeline(&current);
+    zero_pipeline(&next);
 
-    //while(true)
+    for(i = 0; i < 5; i++)
     {
-        print_data(mem, reg, &pipeline, cycle, pc);
+        print_data(mem, reg, &current, cycle, pc);
+        //IFID//
+        next.ifid.instruction = program[pc / 4];
+        next.ifid.PCPlus4 = pc + 4;
+        //IDEX//
+        next.idex.instruction = current.ifid.instruction;
+        next.idex.PCPlus4 = current.ifid.PCPlus4;
+        next.idex.branchTarget = (next.idex.instruction.immediate * 4) + next.idex.PCPlus4;
+        //readdata1
+        //readdata2
+        
+        //EXMEM//
+        next.exmem.instruction = current.idex.instuction;
+        //aluresult
+        //writedatareg
+        //writereg
+
+        //MEMWB//
+        next.memwb.instruction = current.exmem.instruction;
+        //writedatamem
+        //writedataalu
+        //writereg
+
+        cycle++;
+        pc += 4;
+        current = next;
     }
 }
 
 void zero_pipeline(struct pipeline_registers* pipeline)
 {
-    pipeline->ifid.instruction = 0;
-    pipeline->ifid.opcode = 0;
-    pipeline->ifid.rs = 0;
-    pipeline->ifid.rt = 0;
-    pipeline->ifid.rd = 0;
-    pipeline->ifid.immediate = 0;
-    pipeline->ifid.shamt = 0;
-    pipeline->ifid.func = 0;
+    pipeline->ifid.instruction.instruction = 0;
+    pipeline->ifid.instruction.opcode = 0;
+    pipeline->ifid.instruction.rs = 0;
+    pipeline->ifid.instruction.rt = 0;
+    pipeline->ifid.instruction.rd = 0;
+    pipeline->ifid.instruction.immediate = 0;
+    pipeline->ifid.instruction.shamt = 0;
+    pipeline->ifid.instruction.func = 0;
     pipeline->ifid.PCPlus4 = 0;
 
-    pipeline->idex.instruction = 0;
-    pipeline->idex.opcode = 0;
-    pipeline->idex.rs = 0;
-    pipeline->idex.rt = 0;
-    pipeline->idex.rd = 0;
-    pipeline->idex.immediate = 0;
-    pipeline->idex.shamt = 0;
-    pipeline->idex.func = 0;
+    pipeline->idex.instruction.instruction = 0;
+    pipeline->idex.instruction.opcode = 0;
+    pipeline->idex.instruction.rs = 0;
+    pipeline->idex.instruction.rt = 0;
+    pipeline->idex.instruction.rd = 0;
+    pipeline->idex.instruction.immediate = 0;
+    pipeline->idex.instruction.shamt = 0;
+    pipeline->idex.instruction.func = 0;
     pipeline->idex.PCPlus4 = 0;
     pipeline->idex.branchTarget = 0;
     pipeline->idex.readData1 = 0;
     pipeline->idex.readData2 = 0;
 
-    pipeline->exmem.instruction = 0;
-    pipeline->exmem.opcode = 0;
-    pipeline->exmem.rs = 0;
-    pipeline->exmem.rt = 0;
-    pipeline->exmem.rd = 0;
-    pipeline->exmem.immediate = 0;
-    pipeline->exmem.shamt = 0;
-    pipeline->exmem.func = 0;
+    pipeline->exmem.instruction.instruction = 0;
+    pipeline->exmem.instruction.opcode = 0;
+    pipeline->exmem.instruction.rs = 0;
+    pipeline->exmem.instruction.rt = 0;
+    pipeline->exmem.instruction.rd = 0;
+    pipeline->exmem.instruction.immediate = 0;
+    pipeline->exmem.instruction.shamt = 0;
+    pipeline->exmem.instruction.func = 0;
     pipeline->exmem.aluResult = 0;
     pipeline->exmem.writeDataReg = 0;
     pipeline->exmem.writeReg = 0;
-    //i wanna kill myself )(*&@#$()*&@()#DSKFH)
-    pipeline->memwb.instruction = 0;
-    pipeline->memwb.opcode = 0;
-    pipeline->memwb.rs = 0;
-    pipeline->memwb.rt = 0;
-    pipeline->memwb.rd = 0;
-    pipeline->memwb.immediate = 0;
-    pipeline->memwb.shamt = 0;
-    pipeline->memwb.func = 0;
+    //if u read this ur gay
+    pipeline->memwb.instruction.instruction = 0;
+    pipeline->memwb.instruction.opcode = 0;
+    pipeline->memwb.instruction.rs = 0;
+    pipeline->memwb.instruction.rt = 0;
+    pipeline->memwb.instruction.rd = 0;
+    pipeline->memwb.instruction.immediate = 0;
+    pipeline->memwb.instruction.shamt = 0;
+    pipeline->memwb.instruction.func = 0;
     pipeline->memwb.writeDataMem = 0;
     pipeline->memwb.writeDataALU = 0;
     pipeline->memwb.writeReg = 0;
+}
+
+void run_rtype(struct instruction_data inst, int* reg)
+{
+        if (inst.func == 32) //ADD
+        {
+            reg[inst.rd] = reg[inst.rs] + reg[inst.rt];
+            return;
+        }
+        if (inst.func == 34)//SUB
+        {
+            reg[inst.rd] = reg[inst.rs] - reg[inst.rt];
+            return;
+        }
+        //SLL
+        reg[inst.rd] = reg[inst.rt] << inst.shamt;
+        return;
 }
