@@ -149,8 +149,9 @@ int read_data(struct raw_data* src, int* ending_index)
 
     for (i = 0; i < 101; ++i)                  //find where data section starts
     {
-        if (src[i].input[0] == (char) 0) break;
-        ++data_index;
+        //if (src[i].input[0] == '\n') break;
+        //++data_index;
+        printf("%d : %d\n", i, (int) src[i].input[0]);
     }
     return data_index + 1;                     //return start of data section
 }
@@ -274,6 +275,7 @@ void print_register(int reg)
 //      but it works, so i'm not going to fix it.
 void load_memory(struct raw_data* src, struct memory_data* memory, int starting_index, int ending_index)
 {
+    printf("loading memory with starting_index = %d\tending_index = %d\n", starting_index, ending_index);
     int i, j, address;
     j = 0;                      //(minus 1 because we have an empty line in there)
     address = (starting_index - 1) * 4; //starting line * 4 is the byte address
