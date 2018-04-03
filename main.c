@@ -101,7 +101,9 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
 
 void zero_pipeline(struct pipeline_registers* pipeline);
 
-void run_rtype(struct instruction_data instruction, int* reg);
+int run_rtype(struct instruction_data instruction, int* reg);
+
+int run_alu(struct instruction_data instruction, int* reg);
 
 int main(void)
 {
@@ -292,6 +294,8 @@ void print_register(int reg)
         printf("$t%d", reg - 8);
     else if (15 < reg && reg < 24)
         printf("$s%d", reg - 16);
+    else
+        printf("%d", reg);
 }
 
 //return address of data section and populate data file
@@ -376,23 +380,42 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
             exmem_halted = 1;
             next.exmem.instruction.instruction = 0;
         }
-        //aluresult
-        //writedatareg
-        //writereg
+        next.exmem.aluResult = run_alu(next.exmem.instruction, reg);
+        next.exmem.writeDataReg = reg[next.exmem.instruction.rt];
+        if (next.exmem.instruction.opcode == 0) next.exmem.writeReg = next.exmem.instruction.rd;
+        else next.exmem.writeReg = next.exmem.instruction.rt;
 
         //MEMWB//
         next.memwb.instruction = current.exmem.instruction;
         
         if (next.memwb.instruction.instruction == 1)
             stop = 1;
-        //writedatamem
-        //writedataalu
-        //writereg
+        next.memwb.writeDataMem = mem[current.exmem.aluResult / 4].value 
+        next.memwb.writeDataAlu = current.exmem.aluResult;
+        if (next.memwb.instruction.opcode == 0) next.memwb.writeReg = next.memwb.instruction.rd;
+        else next.memwb.writeReg = next.memwb.instruction.rt; 
+
+        //run_instruction(next.memwb.instruction, mem, reg);
 
         cycle++;
         pc += 4;
         current = next;
     }
+}
+
+int run_alu(struct instruction_data instruction, int* reg)
+{
+    if (instruction.instruction == 0 || instruction.instruction == 1) return 0;
+
+    if (instruction.opcode == 0)
+        return run_rtype(instruction, reg);
+
+    if (instruction.opcode == 12)
+        return reg[instruction.rt] & instruction.immediate;
+    if (instruction.opcode == 13)
+        return reg[instruction.rt] | instruction.immediate;
+
+    return 0;
 }
 
 void zero_pipeline(struct pipeline_registers* pipeline)
@@ -445,19 +468,12 @@ void zero_pipeline(struct pipeline_registers* pipeline)
     pipeline->memwb.writeReg = 0;
 }
 
-void run_rtype(struct instruction_data inst, int* reg)
+int run_rtype(struct instruction_data inst, int* reg)
 {
         if (inst.func == 32) //ADD
-        {
-            reg[inst.rd] = reg[inst.rs] + reg[inst.rt];
-            return;
-        }
+            return reg[inst.rs] + reg[inst.rt];    
         if (inst.func == 34)//SUB
-        {
-            reg[inst.rd] = reg[inst.rs] - reg[inst.rt];
-            return;
-        }
+            return reg[inst.rs] - reg[inst.rt];
         //SLL
-        reg[inst.rd] = reg[inst.rt] << inst.shamt;
-        return;
+        return reg[inst.rt] << inst.shamt;
 }
