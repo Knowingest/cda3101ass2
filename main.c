@@ -414,6 +414,8 @@ int run_alu(struct instruction_data instruction, int* reg)
         return reg[instruction.rt] & instruction.immediate;
     if (instruction.opcode == 13)
         return reg[instruction.rt] | instruction.immediate;
+    if (instruction.opcode == 35 || instruction.opcode == 43)
+        return immediate + reg[instrucion.rs];
 
     return 0;
 }
