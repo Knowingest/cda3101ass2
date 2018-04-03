@@ -79,7 +79,6 @@ struct memory_data
 
 struct branchpredictor
 {
-    int pc;
     int target;
     int state;
 };
@@ -90,9 +89,13 @@ void split_data(struct instruction_data* data, struct raw_data* src, int ending_
 
 void print_data(struct memory_data* memory, int* reg_table, struct pipeline_registers* pipeline, int cycle, int pc);
 
+void print_instruction(struct instruction_data instruction);
+
+void print_register(int reg);
+
 void load_memory(struct raw_data* src, struct memory_data* memory, int starting_index, int ending_index);
 
-void populate_branch_predictor(struct instruction_data* data);
+void fill_branch_table(struct instruction_data* data, struct branchpredictor* branch_table);
 
 void run_simulation(struct instruction_data* program, struct memory_data* mem, int* reg);
 
@@ -120,7 +123,7 @@ int main(void)
     data_index = read_data(source_table, &ending_index);
     split_data(instruction_table, source_table, data_index - 1);
     load_memory(source_table, memory, data_index, ending_index);
-    
+    //fill_branch_table(instruction_table, branch_table);
     run_simulation(instruction_table, memory, reg_table);    //hit the gas my dude, lets go
 
     return 0;
@@ -189,8 +192,9 @@ void print_data(struct memory_data* memory, int* reg_table, struct pipeline_regi
     for (i = 0; i < 16; ++i)
         printf("\t\treg_table[%d] = %d\t\treg_table[%d] = %d\n", i, reg_table[i], i + 16, reg_table[i + 16]);
 
-    printf("\tIF/ID:\n\t\tInstruction: %d\n", pipeline->ifid.instruction.instruction);
-    printf("\t\tPCPlus4: %d\n", pipeline->ifid.PCPlus4);
+    printf("\tIF/ID:\n\t\tInstruction: ");
+    print_instruction(pipeline->ifid.instruction);
+    printf("\n\t\tPCPlus4: %d\n", pipeline->ifid.PCPlus4);
     
     printf("\tID/EX:\n\t\tInstruction: %d\n", pipeline->idex.instruction.instruction);
     printf("\t\tPCPlus4: %d\n", pipeline->idex.PCPlus4);
@@ -211,6 +215,57 @@ void print_data(struct memory_data* memory, int* reg_table, struct pipeline_regi
     printf("\t\twriteDataMem: %d\n", pipeline->memwb.writeDataMem);
     printf("\t\twriteDataALU: %d\n", pipeline->memwb.writeDataALU);
     printf("\t\twriteReg: %d\n", pipeline->memwb.writeReg);
+}
+
+void print_instruction(struct instruction_data instruction)
+{
+    //printf("printing instruction with integer value: %d\n", instruction.instruction);
+        //NOOP
+    if (instruction.instruction == 0)
+    {
+        printf("NOOP");
+        return;
+    }
+        //halt
+    if (instruction.instruction == 1)
+    {
+        printf("halt");
+        return;
+    }
+    
+        //R-Type
+    if (instruction.opcode == 0)
+    {
+        if (instruction.func == 32)
+            printf("add ");
+        else if (instruction.func == 34)
+            printf("sub ");
+        else
+            printf("sll ");
+
+        print_register(instruction.rd);
+        printf(",");
+        print_register(instruction.rs);
+        printf(",");
+        if (instruction.func == 0)
+            printf("%d", instruction.shamt);
+        else
+            print_register(instruction.rt);
+        return;
+    }
+    
+
+    printf("%d", instruction.instruction);
+}
+
+void print_register(int reg)
+{
+    if (reg == 0)
+        printf("$0");
+    else if (7 < reg && reg < 16)
+        printf("$t%d", reg - 8);
+    else if (15 < reg && reg < 24)
+        printf("$s%d", reg - 16);
 }
 
 //return address of data section and populate data file
@@ -246,34 +301,63 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
     struct pipeline_registers current, next;
     
     int i;
-    int cycle = 1;
-    int pc = 0;
-    int stop = -1;
+    int cycle = 1;      //cycle counter
+    int pc = 0;         //pc counter (increments in fours)
+    int stop = 0;      //pseudo boolean used to stop the program
+    int ifid_halted, idex_halted, exmem_halted;
+
+        //these mark the pipelines as being shut down, after finding a halt
+    ifid_halted = idex_halted = exmem_halted = 0;
     
+
     zero_pipeline(&current);
     zero_pipeline(&next);
 
-    for(i = 0; i < 5; i++)
+    while(1)
     {
         print_data(mem, reg, &current, cycle, pc);
+        if (stop) break;
+
         //IFID//
-        next.ifid.instruction = program[pc / 4];
-        next.ifid.PCPlus4 = pc + 4;
+        if (current.ifid.instruction.instruction != 1 && !ifid_halted)
+            next.ifid.instruction = program[pc / 4];
+        else if (!ifid_halted)
+        {
+            ifid_halted = 1;
+            next.ifid.instruction.instruction = 0;
+        }
+            next.ifid.PCPlus4 = pc + 4;
+
         //IDEX//
-        next.idex.instruction = current.ifid.instruction;
+        if (current.idex.instruction.instruction != 1 && !idex_halted)
+            next.idex.instruction = current.ifid.instruction;
+        else if (!idex_halted)
+        {
+            idex_halted = 1;
+            next.idex.instruction.instruction = 0;
+        }
         next.idex.PCPlus4 = current.ifid.PCPlus4;
         next.idex.branchTarget = (next.idex.instruction.immediate * 4) + next.idex.PCPlus4;
-        //readdata1
-        //readdata2
+        next.idex.readData1 = reg[next.idex.instruction.rt];
+        next.idex.readData1 = reg[next.idex.instruction.rd];
         
         //EXMEM//
-        next.exmem.instruction = current.idex.instuction;
+        if (current.exmem.instruction.instruction != 1 && !exmem_halted)
+            next.exmem.instruction = current.idex.instruction;
+        else if (!exmem_halted)
+        {
+            exmem_halted = 1;
+            next.exmem.instruction.instruction = 0;
+        }
         //aluresult
         //writedatareg
         //writereg
 
         //MEMWB//
         next.memwb.instruction = current.exmem.instruction;
+        
+        if (next.memwb.instruction.instruction == 1)
+            stop = 1;
         //writedatamem
         //writedataalu
         //writereg
