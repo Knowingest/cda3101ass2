@@ -149,9 +149,8 @@ int read_data(struct raw_data* src, int* ending_index)
 
     for (i = 0; i < 101; ++i)                  //find where data section starts
     {
-        //if (src[i].input[0] == '\n') break;
-        //++data_index;
-        printf("%d : %d\n", i, (int) src[i].input[0]);
+        if (src[i].input[0] == (char) 13 || src[i].input[0] == (char) 0) break;
+        ++data_index;
     }
     return data_index + 1;                     //return start of data section
 }
