@@ -144,8 +144,8 @@ int read_data(struct raw_data* src, int* ending_index)
 
     *ending_index = i;
 
-    //for (; i < 101; ++i)                       //zero out unused section of array
-      //  src[i].input[0] = (char) 0;
+    for (; i < 101; ++i)                       //zero out unused section of array
+        src[i].input[0] = (char) 0;
 
     for (i = 0; i < 101; ++i)                  //find where data section starts
     {
@@ -196,8 +196,9 @@ void print_data(struct memory_data* memory, int* reg_table, struct pipeline_regi
     print_instruction(pipeline->ifid.instruction);
     printf("\n\t\tPCPlus4: %d\n", pipeline->ifid.PCPlus4);
     
-    printf("\tID/EX:\n\t\tInstruction: %d\n", pipeline->idex.instruction.instruction);
-    printf("\t\tPCPlus4: %d\n", pipeline->idex.PCPlus4);
+    printf("\tID/EX:\n\t\tInstruction: ");
+    print_instruction(pipeline->idex.instruction);
+    printf("\n\t\tPCPlus4: %d\n", pipeline->idex.PCPlus4);
     printf("\t\tbranchTarget: %d\n", pipeline->idex.branchTarget);
     printf("\t\treadData1: %d\n", pipeline->idex.readData1);
     printf("\t\treadData2: %d\n", pipeline->idex.readData2);
@@ -206,13 +207,15 @@ void print_data(struct memory_data* memory, int* reg_table, struct pipeline_regi
     printf("\t\trt: %d\n", pipeline->idex.instruction.rt);
     printf("\t\trd: %d\n", pipeline->idex.instruction.rd);
 
-    printf("\tEX/MEM:\n\t\tInstruction: %d\n", pipeline->exmem.instruction.instruction);
-    printf("\t\taluResult: %d\n", pipeline->exmem.aluResult);
+    printf("\tEX/MEM:\n\t\tInstruction: ");
+    print_instruction(pipeline->exmem.instruction);
+    printf("\n\t\taluResult: %d\n", pipeline->exmem.aluResult);
     printf("\t\twriteDataReg: %d\n", pipeline->exmem.writeDataReg);
     printf("\t\twriteReg: %d\n", pipeline->exmem.writeReg);
 
-    printf("\tMEM/WB:\n\t\tInstruction: %d\n", pipeline->memwb.instruction.instruction);
-    printf("\t\twriteDataMem: %d\n", pipeline->memwb.writeDataMem);
+    printf("\tMEM/WB:\n\t\tInstruction: ");
+    print_instruction(pipeline->memwb.instruction);
+    printf("\n\t\twriteDataMem: %d\n", pipeline->memwb.writeDataMem);
     printf("\t\twriteDataALU: %d\n", pipeline->memwb.writeDataALU);
     printf("\t\twriteReg: %d\n", pipeline->memwb.writeReg);
 }
@@ -253,9 +256,32 @@ void print_instruction(struct instruction_data instruction)
             print_register(instruction.rt);
         return;
     }
-    
 
-    printf("%d", instruction.instruction);
+    if (instruction.opcode == 35 || instruction.opcode == 43)
+    {
+        if (instruction.opcode == 35)
+            printf("lw ");
+        else
+            printf("sw ");
+        print_register(instruction.rs);
+        printf(", %d(", instruction.shamt);
+        print_register(instruction.rt);
+        printf(")");
+        return;
+    }
+
+    if (instruction.opcode == 13)
+        printf("ori ");
+    else if (instruction.opcode == 12)
+        printf("andi ");
+    else 
+        printf("bne ");
+    print_register(instruction.rs);
+    printf(",");
+    print_register(instruction.rt);
+    printf(",%d", instruction.immediate);
+
+    //printf("%d", instruction.instruction);
 }
 
 void print_register(int reg)
