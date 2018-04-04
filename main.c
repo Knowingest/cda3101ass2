@@ -349,7 +349,9 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         print_data(mem, reg, &current, cycle, pc);
         if (stop) break;
 
+        ////////
         //IFID//
+        ////////
         if (current.ifid.instruction.instruction != 1 && !ifid_halted)
             next.ifid.instruction = program[pc / 4];
         else if (!ifid_halted)
@@ -359,7 +361,9 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         }
             next.ifid.PCPlus4 = pc + 4;
 
+        ////////
         //IDEX//
+        ////////
         if (current.idex.instruction.instruction != 1 && !idex_halted)
             next.idex.instruction = current.ifid.instruction;
         else if (!idex_halted)
@@ -372,7 +376,9 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         next.idex.readData1 = reg[next.idex.instruction.rt];
         next.idex.readData1 = reg[next.idex.instruction.rd];
         
+        /////////
         //EXMEM//
+        /////////
         if (current.exmem.instruction.instruction != 1 && !exmem_halted)
             next.exmem.instruction = current.idex.instruction;
         else if (!exmem_halted)
@@ -385,7 +391,9 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         if (next.exmem.instruction.opcode == 0) next.exmem.writeReg = next.exmem.instruction.rd;
         else next.exmem.writeReg = next.exmem.instruction.rt;
 
+        /////////
         //MEMWB//
+        /////////
         next.memwb.instruction = current.exmem.instruction;
         
         if (next.memwb.instruction.instruction == 1)
@@ -396,19 +404,20 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         else next.memwb.writeReg = next.memwb.instruction.rt;
 
 
-        if (next.memwb.instruction.instruction != 0 && next.memwb.instruction.instruction != 1)
+        if (next.memwb.instruction.instruction != 0 && stop != 1)
         {
-            if (next.memwb.instruction.opcode == 0)
+            if (next.memwb.instruction.opcode == 0)//r type
                 reg[next.memwb.instruction.rd] = current.exmem.aluResult;
-            if (next.memwb.instruction.opcode == 12 || next.memwb.instruction.opcode == 13)
+            
+            if (next.memwb.instruction.opcode == 12 || next.memwb.instruction.opcode == 13) //andi ori
                 reg[next.memwb.instruction.rt] = current.exmem.aluResult;
-            if (next.memwb.instruction.opcode == 35)
+            
+            if (next.memwb.instruction.opcode == 35)//lw
                 reg[next.memwb.instruction.rt] = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
-            if (next.memwb.instruction.opcode == 43)
+            
+            if (next.memwb.instruction.opcode == 43)//sw
                 mem[(current.exmem.aluResult - mem[0].address) / 4].value = reg[next.memwb.instruction.rt];
         }
-
-        //run_instruction(next.memwb.instruction, mem, reg);
 
         cycle++;
         pc += 4;
@@ -420,14 +429,16 @@ int run_alu(struct instruction_data instruction, int* reg)
 {
     if (instruction.instruction == 0 || instruction.instruction == 1) return 0;
 
-    if (instruction.opcode == 0)
+    if (instruction.opcode == 0) //r type
         return run_rtype(instruction, reg);
 
-    if (instruction.opcode == 12)
+    if (instruction.opcode == 12)//andi
         return reg[instruction.rs] & instruction.immediate;
-    if (instruction.opcode == 13)
+
+    if (instruction.opcode == 13)//ori
         return reg[instruction.rs] | instruction.immediate;
-    if (instruction.opcode == 35 || instruction.opcode == 43)
+
+    if (instruction.opcode == 35 || instruction.opcode == 43)//LW | SW
         return instruction.immediate + reg[instruction.rs];
 
     return reg[instruction.rs] - reg[instruction.rt];
