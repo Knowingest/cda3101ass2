@@ -184,15 +184,15 @@ void split_data(struct instruction_data* data, struct raw_data* src, int ending_
 void print_data(struct memory_data* memory, int* reg_table, struct pipeline_registers* pipeline, int cycle, int pc)
 {
     int i;
-    printf("********************\nState at the beginning of cycle %d:\n\tPC = %d\n\tData Memory:\n", cycle, pc);
+    printf("********************\nState at the beginning of cycle %d\n\tPC = %d\n\tData Memory:\n", cycle, pc);
 
     for (i = 0; i < 16; ++i)
-        printf("\t\tmemory_data[%d] = %d\t\tmemory_data[%d] = %d\n", i, memory[i].value, i + 16, memory[i + 16].value);
+        printf("\t\tdataMem[%d] = %d\t\tdataMem[%d] = %d\n", i, memory[i].value, i + 16, memory[i + 16].value);
 
     printf("\tRegisters:\n");
 
     for (i = 0; i < 16; ++i)
-        printf("\t\treg_table[%d] = %d\t\treg_table[%d] = %d\n", i, reg_table[i], i + 16, reg_table[i + 16]);
+        printf("\t\tregFile[%d] = %d\t\tregFile[%d] = %d\n", i, reg_table[i], i + 16, reg_table[i + 16]);
 
     printf("\tIF/ID:\n\t\tInstruction: ");
     print_instruction(pipeline->ifid.instruction);
@@ -205,21 +205,22 @@ void print_data(struct memory_data* memory, int* reg_table, struct pipeline_regi
     printf("\t\treadData1: %d\n", pipeline->idex.readData1);
     printf("\t\treadData2: %d\n", pipeline->idex.readData2);
     printf("\t\timmed: %d\n", pipeline->idex.instruction.immediate);
-    printf("\t\trs: %d\n", pipeline->idex.instruction.rs);
-    printf("\t\trt: %d\n", pipeline->idex.instruction.rt);
-    printf("\t\trd: %d\n", pipeline->idex.instruction.rd);
 
-    printf("\tEX/MEM:\n\t\tInstruction: ");
+    printf("\t\trs: "); print_register(pipeline->idex.instruction.rs);
+    printf("\n\t\trt: "); print_register(pipeline->idex.instruction.rt);
+    printf("\n\t\trd: "); print_register(pipeline->idex.instruction.rd);
+
+    printf("\n\tEX/MEM:\n\t\tInstruction: ");
     print_instruction(pipeline->exmem.instruction);
-    printf("\n\t\taluResult: %d\n", pipeline->exmem.aluResult);
-    printf("\t\twriteDataReg: %d\n", pipeline->exmem.writeDataReg);
-    printf("\t\twriteReg: %d\n", pipeline->exmem.writeReg);
+    printf("\n\t\taluResult: 0\n", pipeline->exmem.aluResult);
+    printf("\t\twriteDataReg: 0\n", pipeline->exmem.writeDataReg);
+    printf("\t\twriteReg: 0\n", pipeline->exmem.writeReg);
 
     printf("\tMEM/WB:\n\t\tInstruction: ");
     print_instruction(pipeline->memwb.instruction);
-    printf("\n\t\twriteDataMem: %d\n", pipeline->memwb.writeDataMem);
-    printf("\t\twriteDataALU: %d\n", pipeline->memwb.writeDataALU);
-    printf("\t\twriteReg: %d\n", pipeline->memwb.writeReg);
+    printf("\n\t\twriteDataMem: 0\n", pipeline->memwb.writeDataMem);
+    printf("\t\twriteDataALU: 0\n", pipeline->memwb.writeDataALU);
+    printf("\t\twriteReg: 0\n", pipeline->memwb.writeReg);
 }
 
 void print_instruction(struct instruction_data instruction)
@@ -265,9 +266,9 @@ void print_instruction(struct instruction_data instruction)
             printf("lw ");
         else
             printf("sw ");
-        print_register(instruction.rs);
-        printf(", %d(", instruction.shamt);
         print_register(instruction.rt);
+        printf(", %d(", instruction.shamt);
+        print_register(instruction.rs);
         printf(")");
         return;
     }
@@ -278,9 +279,9 @@ void print_instruction(struct instruction_data instruction)
         printf("andi ");
     else 
         printf("bne ");
-    print_register(instruction.rs);
-    printf(",");
     print_register(instruction.rt);
+    printf(",");
+    print_register(instruction.rs);
     printf(",%d", instruction.immediate);
 
     //printf("%d", instruction.instruction);
@@ -304,7 +305,7 @@ void print_register(int reg)
 //      but it works, so i'm not going to fix it.
 void load_memory(struct raw_data* src, struct memory_data* memory, int starting_index, int ending_index)
 {
-    printf("loading memory with starting_index = %d\tending_index = %d\n", starting_index, ending_index);
+    //printf("loading memory with starting_index = %d\tending_index = %d\n", starting_index, ending_index);
     int i, j, address;
     j = 0;                      //(minus 1 because we have an empty line in there)
     address = (starting_index - 1) * 4; //starting line * 4 is the byte address
@@ -398,10 +399,17 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         
         if (next.memwb.instruction.instruction == 1)
             stop = 1;
-        next.memwb.writeDataMem = mem[current.exmem.aluResult / 4].value;
-        next.memwb.writeDataALU = current.exmem.aluResult;
-        if (next.memwb.instruction.opcode == 0) next.memwb.writeReg = next.memwb.instruction.rd;
-        else next.memwb.writeReg = next.memwb.instruction.rt;
+	if (next.memwb.instruction.opcode == 35)
+{
+		printf("setting writeDataMem to memory in slot %d\n", (current.exmem.aluResult - mem[0].address) / 4);
+       		next.memwb.writeDataMem = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
+}       
+	 next.memwb.writeDataALU = current.exmem.aluResult;
+        
+	if (next.memwb.instruction.opcode == 0)
+		next.memwb.writeReg = next.memwb.instruction.rd;
+        
+	else next.memwb.writeReg = next.memwb.instruction.rt;
 
 
         if (next.memwb.instruction.instruction != 0 && stop != 1)
@@ -413,8 +421,10 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
                 reg[next.memwb.instruction.rt] = current.exmem.aluResult;
             
             if (next.memwb.instruction.opcode == 35)//lw
+{
+		printf("ttrying to load from index: %d\n", (current.exmem.aluResult - mem[0].address) / 4);
                 reg[next.memwb.instruction.rt] = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
-            
+}            
             if (next.memwb.instruction.opcode == 43)//sw
                 mem[(current.exmem.aluResult - mem[0].address) / 4].value = reg[next.memwb.instruction.rt];
         }
