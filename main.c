@@ -390,10 +390,23 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         
         if (next.memwb.instruction.instruction == 1)
             stop = 1;
-        next.memwb.writeDataMem = mem[current.exmem.aluResult / 4].value 
-        next.memwb.writeDataAlu = current.exmem.aluResult;
+        next.memwb.writeDataMem = mem[current.exmem.aluResult / 4].value;
+        next.memwb.writeDataALU = current.exmem.aluResult;
         if (next.memwb.instruction.opcode == 0) next.memwb.writeReg = next.memwb.instruction.rd;
-        else next.memwb.writeReg = next.memwb.instruction.rt; 
+        else next.memwb.writeReg = next.memwb.instruction.rt;
+
+
+        if (next.memwb.instruction.instruction != 0 && next.memwb.instruction.instruction != 1)
+        {
+            if (next.memwb.instruction.opcode == 0)
+                reg[next.memwb.instruction.rd] = current.exmem.aluResult;
+            if (next.memwb.instruction.opcode == 12 || next.memwb.instruction.opcode == 13)
+                reg[next.memwb.instruction.rt] = current.exmem.aluResult;
+            if (next.memwb.instruction.opcode == 35)
+                reg[next.memwb.instruction.rt] = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
+            if (next.memwb.instruction.opcode == 43)
+                mem[(current.exmem.aluResult - mem[0].address) / 4].value = reg[next.memwb.instruction.rt];
+        }
 
         //run_instruction(next.memwb.instruction, mem, reg);
 
@@ -411,13 +424,13 @@ int run_alu(struct instruction_data instruction, int* reg)
         return run_rtype(instruction, reg);
 
     if (instruction.opcode == 12)
-        return reg[instruction.rt] & instruction.immediate;
+        return reg[instruction.rs] & instruction.immediate;
     if (instruction.opcode == 13)
-        return reg[instruction.rt] | instruction.immediate;
+        return reg[instruction.rs] | instruction.immediate;
     if (instruction.opcode == 35 || instruction.opcode == 43)
-        return immediate + reg[instrucion.rs];
+        return instruction.immediate + reg[instruction.rs];
 
-    return 0;
+    return reg[instruction.rs] - reg[instruction.rt];
 }
 
 void zero_pipeline(struct pipeline_registers* pipeline)
