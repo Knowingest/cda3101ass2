@@ -400,34 +400,35 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         //MEMWB//
         /////////
         next.memwb.instruction = current.exmem.instruction;
+
         
         if (next.memwb.instruction.instruction == 1)
             stop = 1;
-	if (next.memwb.instruction.opcode == 35)
-    {
-       	next.memwb.writeDataMem = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
-    }       
-	next.memwb.writeDataALU = current.exmem.aluResult;
-        
-	if (next.memwb.instruction.opcode == 0)
-		next.memwb.writeReg = next.memwb.instruction.rd;
-        
-	else next.memwb.writeReg = next.memwb.instruction.rt;
-
-
-        if (next.memwb.instruction.instruction != 0 && stop != 1)
+	    if (next.memwb.instruction.opcode == 35)
         {
-            if (next.memwb.instruction.opcode == 0)//r type
-                reg[next.memwb.instruction.rd] = current.exmem.aluResult;
-            
-            if (next.memwb.instruction.opcode == 12 || next.memwb.instruction.opcode == 13) //andi ori
-                reg[next.memwb.instruction.rt] = current.exmem.aluResult;
-            
-            if (next.memwb.instruction.opcode == 35)//lw
-                reg[next.memwb.instruction.rt] = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
+           	next.memwb.writeDataMem = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
+        }          
+	    next.memwb.writeDataALU = current.exmem.aluResult;
+        
+	    if (next.memwb.instruction.opcode == 0)
+	   	next.memwb.writeReg = next.memwb.instruction.rd;
+        
+	    else next.memwb.writeReg = next.memwb.instruction.rt;
 
-            if (next.memwb.instruction.opcode == 43)//sw
-                mem[(current.exmem.aluResult - mem[0].address) / 4].value = reg[next.memwb.instruction.rt];
+        //execute current instruction
+        if (current.memwb.instruction.instruction != 0 && stop != 1)
+        {
+            if (current.memwb.instruction.opcode == 0)//r type
+                reg[current.memwb.instruction.rd] = current.memwb.writeDataALU;
+            
+            if (current.memwb.instruction.opcode == 12 || current.memwb.instruction.opcode == 13) //andi ori
+                reg[current.memwb.instruction.rt] = current.memwb.writeDataALU;
+            
+            if (current.memwb.instruction.opcode == 35)//lw
+                reg[current.memwb.instruction.rt] = mem[(current.memwb.writeDataALU - mem[0].address) / 4].value;
+
+            if (current.memwb.instruction.opcode == 43)//sw
+                mem[(current.memwb.writeDataALU - mem[0].address) / 4].value = reg[current.memwb.instruction.rt];
         }
 
         cycle++;
@@ -438,6 +439,7 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
 
 int run_alu(struct instruction_data instruction, int* reg)
 {
+    //printf("running ALU with opcode %d\n", instruction.opcode);;
     if (instruction.instruction == 0 || instruction.instruction == 1) return 0;
 
     if (instruction.opcode == 0) //r type
