@@ -214,13 +214,14 @@ void print_data(struct memory_data* memory, int* reg_table, struct pipeline_regi
     print_instruction(pipeline->exmem.instruction);
     printf("\n\t\taluResult: %d\n", pipeline->exmem.aluResult);
     printf("\t\twriteDataReg: %d\n", pipeline->exmem.writeDataReg);
-    printf("\t\twriteReg: %d\n", pipeline->exmem.writeReg);
+    printf("\t\twriteReg: "); print_register(pipeline->exmem.writeReg);
 
-    printf("\tMEM/WB\n\t\tInstruction: ");
+    printf("\n\tMEM/WB\n\t\tInstruction: ");
     print_instruction(pipeline->memwb.instruction);
     printf("\n\t\twriteDataMem: %d\n", pipeline->memwb.writeDataMem);
     printf("\t\twriteDataALU: %d\n", pipeline->memwb.writeDataALU);
-    printf("\t\twriteReg: %d\n", pipeline->memwb.writeReg);
+    printf("\t\twriteReg: "); print_register(pipeline->memwb.writeReg);
+    printf("\n");//i hate c
 }
 
 void print_instruction(struct instruction_data instruction)
@@ -256,7 +257,10 @@ void print_instruction(struct instruction_data instruction)
         if (instruction.func == 0)
             printf("%d", instruction.shamt);
         else
+        {
+            printf("$");
             print_register(instruction.rt);
+        }
         return;
     }
 
