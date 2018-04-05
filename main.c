@@ -517,9 +517,9 @@ void zero_pipeline(struct pipeline_registers* pipeline)
 int run_rtype(struct instruction_data inst, int* reg)
 {
         if (inst.func == 32) //ADD
-            return reg[inst.rs] + reg[inst.rt];    
+            return (reg[inst.rs] + reg[inst.rt]);    
         if (inst.func == 34)//SUB
-            return reg[inst.rs] - reg[inst.rt];
+            return (reg[inst.rs] - reg[inst.rt]);
         //SLL
-        return reg[inst.rt] << inst.shamt;
+        return (reg[inst.rt] << inst.shamt);
 }
