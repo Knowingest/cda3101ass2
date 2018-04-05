@@ -409,10 +409,10 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
     }       
 	next.memwb.writeDataALU = current.exmem.aluResult;
         
-	if (current.memwb.instruction.opcode == 0)
-		current.memwb.writeReg = current.memwb.instruction.rd;
+	if (next.memwb.instruction.opcode == 0)
+		next.memwb.writeReg = next.memwb.instruction.rd;
         
-	else current.memwb.writeReg = current.memwb.instruction.rt;
+	else next.memwb.writeReg = next.memwb.instruction.rt;
 
 
         if (current.memwb.instruction.instruction != 0 && stop != 1)
