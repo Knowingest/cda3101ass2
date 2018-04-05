@@ -112,7 +112,7 @@ int main(void)
     int data_index = 0;
     
     //create data arrays
-    struct raw_data source_table[101];               //holds data in cstr form
+    struct raw_data source_table[133];               //holds data in cstr form
     struct instruction_data instruction_table[100];        //table of instructions as ints
     struct branchpredictor branch_table[100];
    
@@ -138,7 +138,7 @@ int read_data(struct raw_data* src, int* ending_index)
 {
     int data_index;
     int i;
-    for (i = 0; i < 101; ++i)
+    for (i = 0; i < 133; ++i)
     {
         if (gets(src[i].input) == NULL) break; //read in data as array of cstr
         //printf("%s\n", source_data[i].input);
@@ -146,10 +146,10 @@ int read_data(struct raw_data* src, int* ending_index)
 
     *ending_index = i;
 
-    for (; i < 101; ++i)                       //zero out unused section of array
+    for (; i < 133; ++i)                       //zero out unused section of array
         src[i].input[0] = (char) 0;
 
-    for (i = 0; i < 101; ++i)                  //find where data section starts
+    for (i = 0; i < 133; ++i)                  //find where data section starts
     {
         if (src[i].input[0] == (char) 13 || src[i].input[0] == (char) 0) break;
         ++data_index;
@@ -172,6 +172,7 @@ void split_data(struct instruction_data* data, struct raw_data* src, int ending_
         data[i].rt = (data[i].instruction & rtmask) >> 16;
         data[i].rd = (data[i].instruction & rdmask) >> 11;
         data[i].immediate = (data[i].instruction & immask);
+        if (data[i].instruction == 1) data[i].immediate = 0;
         data[i].shamt = (data[i].instruction & shiftmask) >> 6;
         data[i].func = (data[i].instruction & fnmask);
     }   //we can now reference each individual component of the instruction
@@ -378,8 +379,9 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         }
         next.idex.PCPlus4 = current.ifid.PCPlus4;
         next.idex.branchTarget = (next.idex.instruction.immediate * 4) + next.idex.PCPlus4;
-        next.idex.readData1 = reg[next.idex.instruction.rt];
-        next.idex.readData1 = reg[next.idex.instruction.rd];
+        if (next.idex.instruction.instruction == 1) next.idex.branchTarget = next.idex.PCPlus4;
+        next.idex.readData1 = reg[next.idex.instruction.rs];
+        next.idex.readData2 = reg[next.idex.instruction.rt];
         
         /////////
         //EXMEM//
@@ -409,6 +411,7 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
             printf("setting writeDataMem...\n");
             printf("current.exmem.aluresult = %d\n", current.exmem.aluResult);
             printf("mem[0].address = %d\n", mem[0].address);
+            printf("")
            	next.memwb.writeDataMem = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
         }          
 	    next.memwb.writeDataALU = current.exmem.aluResult;
