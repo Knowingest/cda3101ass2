@@ -375,10 +375,13 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         {
             idex_halted = 1;
             next.idex.instruction.instruction = 0;
+            next.idex.instruction.immediate = 0;
         }
         next.idex.PCPlus4 = current.ifid.PCPlus4;
         next.idex.branchTarget = (next.idex.instruction.immediate * 4) + next.idex.PCPlus4;
+        if (current.idex.instruction.instruction == 0) next.idex.branchTarget = next.idex.PCPlus4;
         if (current.idex.instruction.instruction == 1) next.idex.branchTarget = next.idex.PCPlus4;
+                //dont ask
         next.idex.readData1 = reg[next.idex.instruction.rs];
         next.idex.readData2 = reg[next.idex.instruction.rt];
         
