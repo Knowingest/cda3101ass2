@@ -172,7 +172,6 @@ void split_data(struct instruction_data* data, struct raw_data* src, int ending_
         data[i].rt = (data[i].instruction & rtmask) >> 16;
         data[i].rd = (data[i].instruction & rdmask) >> 11;
         data[i].immediate = (data[i].instruction & immask);
-        if (data[i].instruction == 1) data[i].immediate = 0;
         data[i].shamt = (data[i].instruction & shiftmask) >> 6;
         data[i].func = (data[i].instruction & fnmask);
     }   //we can now reference each individual component of the instruction
@@ -379,7 +378,7 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
         }
         next.idex.PCPlus4 = current.ifid.PCPlus4;
         next.idex.branchTarget = (next.idex.instruction.immediate * 4) + next.idex.PCPlus4;
-        if (next.idex.instruction.instruction == 1) next.idex.branchTarget = next.idex.PCPlus4;
+        if (current.idex.instruction.instruction == 1) next.idex.branchTarget = next.idex.PCPlus4;
         next.idex.readData1 = reg[next.idex.instruction.rs];
         next.idex.readData2 = reg[next.idex.instruction.rt];
         
