@@ -267,7 +267,7 @@ void print_instruction(struct instruction_data instruction)
         else
             printf("sw $");
         print_register(instruction.rt);
-        printf(", %d($", instruction.shamt);
+        printf(",%d($", instruction.immediate);
         print_register(instruction.rs);
         printf(")");
         return;
@@ -291,9 +291,9 @@ void print_register(int reg)
 {
     if (reg == 0)
         printf("0");
-    else if (7 < reg && reg < 16)
+    else if (8 <= reg && reg <= 15)
         printf("t%d", reg - 8);
-    else if (15 < reg && reg < 24)
+    else if (16 <= reg && reg <= 23)
         printf("s%d", reg - 16);
     else
         printf("%d", reg);
@@ -403,27 +403,27 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
     {
        	next.memwb.writeDataMem = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
     }       
-	 next.memwb.writeDataALU = current.exmem.aluResult;
+	next.memwb.writeDataALU = current.exmem.aluResult;
         
-	if (next.memwb.instruction.opcode == 0)
-		next.memwb.writeReg = next.memwb.instruction.rd;
+	if (current.memwb.instruction.opcode == 0)
+		current.memwb.writeReg = current.memwb.instruction.rd;
         
-	else next.memwb.writeReg = next.memwb.instruction.rt;
+	else current.memwb.writeReg = current.memwb.instruction.rt;
 
 
-        if (next.memwb.instruction.instruction != 0 && stop != 1)
+        if (current.memwb.instruction.instruction != 0 && stop != 1)
         {
-            if (next.memwb.instruction.opcode == 0)//r type
-                reg[next.memwb.instruction.rd] = current.exmem.aluResult;
+            if (current.memwb.instruction.opcode == 0)//r type
+                reg[current.memwb.instruction.rd] = current.exmem.aluResult;
             
-            if (next.memwb.instruction.opcode == 12 || next.memwb.instruction.opcode == 13) //andi ori
-                reg[next.memwb.instruction.rt] = current.exmem.aluResult;
+            if (current.memwb.instruction.opcode == 12 || current.memwb.instruction.opcode == 13) //andi ori
+                reg[current.memwb.instruction.rt] = current.exmem.aluResult;
             
-            if (next.memwb.instruction.opcode == 35)//lw
-                reg[next.memwb.instruction.rt] = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
+            if (current.memwb.instruction.opcode == 35)//lw
+                reg[current.memwb.instruction.rt] = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
 
-            if (next.memwb.instruction.opcode == 43)//sw
-                mem[(current.exmem.aluResult - mem[0].address) / 4].value = reg[next.memwb.instruction.rt];
+            if (current.memwb.instruction.opcode == 43)//sw
+                mem[(current.exmem.aluResult - mem[0].address) / 4].value = reg[current.memwb.instruction.rt];
         }
 
         cycle++;
