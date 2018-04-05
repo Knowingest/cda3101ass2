@@ -406,6 +406,9 @@ void run_simulation(struct instruction_data* program, struct memory_data* mem, i
             stop = 1;
 	    if (next.memwb.instruction.opcode == 35)
         {
+            printf("setting writeDataMem...\n");
+            printf("current.exmem.aluresult = %d\n", current.exmem.aluResult);
+            printf("mem[0].address = %d\n", mem[0].address);
            	next.memwb.writeDataMem = mem[(current.exmem.aluResult - mem[0].address) / 4].value;
         }          
 	    next.memwb.writeDataALU = current.exmem.aluResult;
