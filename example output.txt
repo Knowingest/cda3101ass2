@@ -1,0 +1,677 @@
+
+********************
+State at the beginning of cycle 1:
+    PC = 0
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 0      dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 0
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 0      regFile[24] = 0
+        regFile[9] = 0      regFile[25] = 0
+        regFile[10] = 0     regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: NOOP 
+        PCPlus4: 0
+    ID/EX:
+        Instruction: NOOP 
+        PCPlus4: 0
+        branchTarget: 0
+        readData1: 0
+        readData2: 0
+        immed: 0
+        rs: 0
+        rt: 0
+        rd: 0
+    EX/MEM:
+        Instruction: NOOP 
+        aluResult: 0
+        writeDataReg: 0
+        writeReg: 0
+    MEM/WB:
+        Instruction: NOOP 
+        writeDataMem: 0
+        writeDataALU: 0
+        writeReg: 0
+
+********************
+State at the beginning of cycle 2:
+    PC = 4
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 0      dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 0
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 0      regFile[24] = 0
+        regFile[9] = 0      regFile[25] = 0
+        regFile[10] = 0     regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: ori $s0,$0,24
+        PCPlus4: 4
+    ID/EX:
+        Instruction: NOOP 
+        PCPlus4: 0
+        branchTarget: 0
+        readData1: 0
+        readData2: 0
+        immed: 0
+        rs: 0
+        rt: 0
+        rd: 0
+    EX/MEM:
+        Instruction: NOOP 
+        aluResult: 0
+        writeDataReg: 0
+        writeReg: 0
+    MEM/WB:
+        Instruction: NOOP 
+        writeDataMem: 0
+        writeDataALU: 0
+        writeReg: 0
+        
+********************
+State at the beginning of cycle 3:
+    PC = 8
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 0      dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 0
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 0      regFile[24] = 0
+        regFile[9] = 0      regFile[25] = 0
+        regFile[10] = 0     regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: lw $t0,0($s0)
+        PCPlus4: 8
+    ID/EX:
+        Instruction: ori $s0,$0,24
+        PCPlus4: 4
+        branchTarget: 100
+        readData1: 0
+        readData2: 0
+        immed: 24
+        rs: 0
+        rt: s0
+        rd: 0
+    EX/MEM:
+        Instruction: NOOP 
+        aluResult: 0
+        writeDataReg: 0
+        writeReg: 0
+    MEM/WB:
+        Instruction: NOOP 
+        writeDataMem: 0
+        writeDataALU: 0
+        writeReg: 0
+        
+********************
+State at the beginning of cycle 4:
+    PC = 12
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 0      dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 0
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 0      regFile[24] = 0
+        regFile[9] = 0      regFile[25] = 0
+        regFile[10] = 0     regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: lw $t1,4($s0)
+        PCPlus4: 12
+    ID/EX:
+        Instruction: lw $t0,0($s0)
+        PCPlus4: 8
+        branchTarget: 8
+        readData1: 0
+        readData2: 0
+        immed: 0
+        rs: s0
+        rt: t0
+        rd: 0
+    EX/MEM: 
+        Instruction: ori $s0,$0,24
+        aluResult: 24
+        writeDataReg: 0
+        writeReg: s0
+    MEM/WB:
+        Instruction: NOOP 
+        writeDataMem: 0
+        writeDataALU: 0
+        writeReg: 0
+        
+********************
+State at the beginning of cycle 5:
+    PC = 16
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 0      dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 0
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 0      regFile[24] = 0
+        regFile[9] = 0      regFile[25] = 0
+        regFile[10] = 0     regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: add $t2,$t0,$t1
+        PCPlus4: 16
+    ID/EX:
+        Instruction: lw $t1,4($s0)
+        PCPlus4: 12
+        branchTarget: 28
+        readData1: 0
+        readData2: 0
+        immed: 4
+        rs: s0
+        rt: t1
+        rd: 0
+    EX/MEM: lw $t0,0($s0)
+        Instruction: 
+        aluResult: 24
+        writeDataReg: 0
+        writeReg: t0
+    MEM/WB:
+        Instruction: ori $s0,$0,24
+        writeDataMem: 0
+        writeDataALU: 24
+        writeReg: s0
+        
+********************
+State at the beginning of cycle 6:
+    PC = 16
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 0      dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 24
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 0      regFile[24] = 0
+        regFile[9] = 0      regFile[25] = 0
+        regFile[10] = 0     regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: add $t2,$t0,$t1
+        PCPlus4: 16
+    ID/EX:
+        Instruction: NOOP
+        PCPlus4: 12
+        branchTarget: 90252
+        readData1: 0
+        readData2: 0
+        immed: 22560
+        rs: t0
+        rt: t1
+        rd: t2
+    EX/MEM: 
+        Instruction: lw $t1,4($s0)
+        aluResult: 28
+        writeDataReg: 0
+        writeReg: t1
+    MEM/WB:
+        Instruction: lw $t0,0($s0)
+        writeDataMem: 15
+        writeDataALU: 24
+        writeReg: t0
+        
+********************
+State at the beginning of cycle 7:
+    PC = 20
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 0      dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 24
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 15     regFile[24] = 0
+        regFile[9] = 0      regFile[25] = 0
+        regFile[10] = 0     regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: sw $t2,8($s0)
+        PCPlus4: 20
+    ID/EX:
+        Instruction: add $t2,$t0,$t1
+        PCPlus4: 16
+        branchTarget: 90256
+        readData1: 15
+        readData2: 0
+        immed: 22560
+        rs: t0
+        rt: t1
+        rd: t2
+    EX/MEM: 
+        Instruction: NOOP
+        aluResult: 0
+        writeDataReg: 0
+        writeReg: t2
+    MEM/WB:
+        Instruction: lw $t0,4($s0)
+        writeDataMem: 25
+        writeDataALU: 28
+        writeReg: t1
+        
+********************
+State at the beginning of cycle 8:
+    PC = 24
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 0      dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 24
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 15     regFile[24] = 0
+        regFile[9] = 25     regFile[25] = 0
+        regFile[10] = 0     regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: halt
+        PCPlus4: 24
+    ID/EX:
+        Instruction: sw $t2,8($s0)
+        PCPlus4: 20
+        branchTarget: 52
+        readData1: 24
+        readData2: 0
+        immed: 8
+        rs: s0
+        rt: t2
+        rd: 0
+    EX/MEM: 
+        Instruction: add $t2,$t0,$t1
+        aluResult: 40
+        writeDataReg: 25
+        writeReg: t2
+    MEM/WB:
+        Instruction: NOOP
+        writeDataMem: 0
+        writeDataALU: 0
+        writeReg: t2
+        
+********************
+State at the beginning of cycle 9:
+    PC = 28
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 0      dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 24
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 15     regFile[24] = 0
+        regFile[9] = 25     regFile[25] = 0
+        regFile[10] = 0     regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: NOOP
+        PCPlus4: 24
+    ID/EX:
+        Instruction: halt
+        PCPlus4: 24
+        branchTarget: 28
+        readData1: 0
+        readData2: 0
+        immed: 1
+        rs: 0
+        rt: 0
+        rd: 0
+    EX/MEM: 
+        Instruction: sw $t2,8($s0)
+        aluResult: 32
+        writeDataReg: 40
+        writeReg: t2
+    MEM/WB:
+        Instruction: add $t2,$t0,$t1
+        writeDataMem: 0
+        writeDataALU: 40
+        writeReg: t2
+        
+********************
+State at the beginning of cycle 10:
+    PC = 32
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 40     dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 24
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 15     regFile[24] = 0
+        regFile[9] = 25     regFile[25] = 0
+        regFile[10] = 40    regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: NOOP
+        PCPlus4: 32
+    ID/EX:
+        Instruction: NOOP
+        PCPlus4: 28
+        branchTarget: 28
+        readData1: 0
+        readData2: 0
+        immed: 0
+        rs: 0
+        rt: 0
+        rd: 0
+    EX/MEM: 
+        Instruction: halt
+        aluResult: 0
+        writeDataReg: 0
+        writeReg: 0
+    MEM/WB:
+        Instruction: sw $t2,8($s0)
+        writeDataMem: 0
+        writeDataALU: 32
+        writeReg: t2
+        
+********************
+State at the beginning of cycle 11:
+    PC = 36
+    Data Memory:
+        dataMem[0] = 15     dataMem[16] = 0
+        dataMem[1] = 25     dataMem[17] = 0
+        dataMem[2] = 40     dataMem[18] = 0
+        dataMem[3] = 0      dataMem[19] = 0
+        dataMem[4] = 0      dataMem[20] = 0
+        dataMem[5] = 0      dataMem[21] = 0
+        dataMem[6] = 0      dataMem[22] = 0
+        dataMem[7] = 0      dataMem[23] = 0
+        dataMem[8] = 0      dataMem[24] = 0
+        dataMem[9] = 0      dataMem[25] = 0
+        dataMem[10] = 0     dataMem[26] = 0
+        dataMem[11] = 0     dataMem[27] = 0
+        dataMem[12] = 0     dataMem[28] = 0
+        dataMem[13] = 0     dataMem[29] = 0
+        dataMem[14] = 0     dataMem[30] = 0
+        dataMem[15] = 0     dataMem[31] = 0
+    Registers:
+        regFile[0] = 0      regFile[16] = 24
+        regFile[1] = 0      regFile[17] = 0
+        regFile[2] = 0      regFile[18] = 0
+        regFile[3] = 0      regFile[19] = 0
+        regFile[4] = 0      regFile[20] = 0
+        regFile[5] = 0      regFile[21] = 0
+        regFile[6] = 0      regFile[22] = 0
+        regFile[7] = 0      regFile[23] = 0
+        regFile[8] = 15     regFile[24] = 0
+        regFile[9] = 25     regFile[25] = 0
+        regFile[10] = 40    regFile[26] = 0
+        regFile[11] = 0     regFile[27] = 0
+        regFile[12] = 0     regFile[28] = 0
+        regFile[13] = 0     regFile[29] = 0
+        regFile[14] = 0     regFile[30] = 0
+        regFile[15] = 0     regFile[31] = 0
+    IF/ID:
+        Instruction: NOOP
+        PCPlus4: 36
+    ID/EX:
+        Instruction: NOOP
+        PCPlus4: 32
+        branchTarget: 32
+        readData1: 0
+        readData2: 0
+        immed: 0
+        rs: 0
+        rt: 0
+        rd: 0
+    EX/MEM: 
+        Instruction: NOOP
+        aluResult: 0
+        writeDataReg: 0
+        writeReg: 0
+    MEM/WB:
+        Instruction: halt
+        writeDataMem: 0
+        writeDataALU: 0
+        writeReg: 0
+        
+********************
+Total number of cycles executed: 11
+Total number of stalls: 1
+Total number of branches: 0
+Total number of mispredicted branches: 0
