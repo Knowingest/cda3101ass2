@@ -3,9 +3,6 @@ project 2
 CDA3101
 blahblahblah
 
-
-This shit is pretty unfinished but lets be honest it won't be the worst one you see today.
-
 My program reads in and runs instructions through a pipeline successfully.
 The only instructions that give their desired results are ORI, ADDI, LW, and SW.
 
