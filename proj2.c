@@ -500,7 +500,7 @@ void zero_pipeline(struct pipeline_registers* pipeline)
     pipeline->exmem.aluResult = 0;
     pipeline->exmem.writeDataReg = 0;
     pipeline->exmem.writeReg = 0;
-    //if u read this ur gay
+    //if u read ur wonderful
     pipeline->memwb.instruction.instruction = 0;
     pipeline->memwb.instruction.opcode = 0;
     pipeline->memwb.instruction.rs = 0;
